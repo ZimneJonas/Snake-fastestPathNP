@@ -1,0 +1,9 @@
+
+Snake videos 
+
+Clingo can solve NP-hard problem faster..?
+https://www.youtube.com/watch?v=tjQIO1rqTBE
+https://www.youtube.com/watch?v=TOpBcfbAgPg
+
+Encoding to slow
+-> maybe copy asprillo
