@@ -14,7 +14,7 @@ direction((X,Y)) :- X=-1..1, Y=-1..1, |X+Y|=1.
 %nextto((X,Y),(XX,YY),(X+XX,Y+YY)) :- grid((X,Y)), direction((XX,YY)), grid((X+XX,Y+YY)).
 
 %Choose a step
-%1{head((X+X',Y+Y'),T):direction((X',Y')),Y+Y'>0,Y+Y'<=hight,X+X'>0,X+X'<=length}1:- head((X,Y),T-1), T < (hight*length).
+1{head((X+X',Y+Y'),T):direction((X',Y')),Y+Y'>0,Y+Y'<=hight,X+X'>0,X+X'<=length}1:- head((X,Y),T-1), T < (hight*length).
 
 %to compare % TODO compare to asprillo M-Domain
 %1{direction((X',Y'),T)}1 :- time(T)
