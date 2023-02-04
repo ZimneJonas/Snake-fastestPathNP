@@ -1,7 +1,5 @@
 from logic.Info import Info 
 import logic.Ploting as plt
-
-import logic.Run as run
 import time
 
 #Show Game while solving
@@ -25,7 +23,7 @@ class SnakeGame(Info):
         else:
             super().__init__(SOLVER, 72, 48)
                 
-        run.generate_apple(self.data)
+        self.generate_apple()
         while True:
             #snake moves
             self.move()
