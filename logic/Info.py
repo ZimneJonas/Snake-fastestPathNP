@@ -1,6 +1,6 @@
 from collections import deque
 from random import randint
-from algorithms.Solve import Solve as solve
+import logic.algorithms.Solve as solve
 from itertools import islice
 
 class Info: 
@@ -14,12 +14,26 @@ class Info:
         self.data.update({"order": deque()})
         self.data.update({"order_status": False})
         #Head of Snake starts in middle of grid
-        self.data.update({"head" : ((self.data["rows"]//2)-1, (self.data["colums"]//2)-1)})
         self.data.update({"body_length" : 1})
         self.data.update({"planning_time":[]})
         self.data.update({"moves" : 0})
         self.data.update({"times": dict()})
+        self.update_plan()
 
+    def move(self):
+        self.data["moves"] += 1
+        
+        if self.get_head()==self.data["apple"]: 
+            #print("Progress:",self.data["body_length"],"/",len(self.data["grid"]))
+            self.eat()
+            if not self.generate_apple():
+                print("game WON")
+                return False #STOPS MOVING
+        else:
+            self.data["order"].rotate(-1)
+
+        return True
+    
 
     def update_plan(self):
         # updates plan if needed
@@ -27,37 +41,61 @@ class Info:
             #keeps old plan after first time
             if "plan" not in self.data:  
                 self.data.update({"plan" : solve.simple_hamilton(self.data)})
-                self.plan_to_order()
+                self.initial_plan_to_order()
 
+
+    def get_head(self):
+        return self.data["order"][self.data["body_length"]-1]
+
+
+    def eat(self):
+        self.data["body_length"] += 1
 
     def generate_apple(self):
         #randomly genarates apple
         #outside of body
         
-        free = len(self.data["grid"]) - self.data["body_length"]
+        free = self.get_free_fields()
+        if len(free) == 0:
+            return False
         
-        if free:
-            raise ValueError('No free Spaces')
-        
-        self.data.update({"apple":self.data["order"][randint(0,free)]})  
+        self.data.update({"apple":free[randint(0,len(free)-1)]})  
         self.update_plan()
+        return True
    
 
-
-    def plan_to_order(self):
-        #Snake is 0-body_length-1 (right order)
+    def initial_plan_to_order(self):
+        #creates order from 0 out of plan
+        self.data["order"].append(tuple(((self.data["rows"]//2)-1, (self.data["colums"]//2)-1)))
+        start = self.data["order"][0] #start
+        step = self.get_next_field(start)
+        while start!=step:
+            self.data["order"].append(step)
+            step = self.get_next_field(step)
         
-        free = self.get_free_fields()
-        #delete old path
-        self.del_free_fields()
+        if len(self.data["order"]) != len(self.data["order"]):
+            raise ValueError("CUSTOM ERROR: no complete order generated")
+
+            
+
+    def update_plan_to_order(self):
+
+        #Snake is 0-body_length-1 (right order) - nochange
+        self.data["body_length"]
         #get new path
-        for field in free:
-            self.get_next_field(field)     
         
+        for ii in range(len(self.data["grid"])):
+            self.data["order"].rotate(-1) # one full round
+            #in Body do nothing! (rotate through)
+            if ii >= self.data["body_length"]-1:
+                self.data["order"][0] = self.get_next_field(self.data["order"][-1])
+                
+        if len(self.data["order"]) != len(self.data["order"]):
+            raise ValueError("CUSTOM ERROR: no complete order generated")            
     
-    def del_free_fields(self):
-        self.data["order"]=islice(self.data["order"] ,0 , self.data["body_length"])
-
+    def get_body(self):
+        return list(islice(self.data["order"] ,0, self.data["body_length"]))
+    
     def get_free_fields(self):
         return list(islice(self.data["order"] ,self.data["body_length"], len(self.data["grid"])))
 

@@ -3,7 +3,7 @@ import logic.Ploting as plt
 import time
 
 #Show Game while solving
-VISUALS=True
+VISUALS=False
 SOLVER="simple_hamilton"
 
 if VISUALS:
@@ -15,7 +15,7 @@ class SnakeGame(Info):
 
    
     def __init__(self): 
-        start = time.time()   
+           
         if VISUALS:
             #Make smaler for faster results
             super().__init__(SOLVER,20,10)
@@ -24,39 +24,20 @@ class SnakeGame(Info):
             super().__init__(SOLVER, 72, 48)
                 
         self.generate_apple()
-        while True:
-            #snake moves
-            self.move()
-            # check if snake eats
-            if self.data["head"]==self.data["apple"]: 
-                #print("Progress:",len(self.data["body"]),"/",len(self.data["grid"]))
-                try:
-                    run.generate_apple(self)
-                    
-                except:
-                    print("Game WON")
-                    break
-            
+        while self.move():
             if VISUALS:
-                #TODO run Visuals after
+                #TODO run Visuals after - Data efficent possible?
                 ui.get_frame(FPS)
         
         if not VISUALS:
             #save data
-            end = time.time()
+            pass
             
                 
-
-        
-
-
-
-
-
 if __name__ == "__main__":
-    
+    start = time.time()
     game = SnakeGame()
-    
+    end = time.time()
     #game.data.update({"total_time":end-start})
     print(game.data["planning_time"],"Moves", game.data["moves"],"Total time",end-start)
    

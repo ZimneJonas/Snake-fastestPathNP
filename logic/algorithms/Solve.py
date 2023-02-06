@@ -12,12 +12,12 @@ def simple_hamilton(data):
     start = time.time()
     if data["colums"]%2:
         raise ValueError('uneven colums not yet accepted')
-    if data["rows"]<1 or game.data["colums"]<1:
+    if data["rows"]<1 or data["colums"]<1:
         raise ValueError('too smal')
    
     plan = dict(())
-    for xx in range(data["colums"]):
-        for yy in range(data["rows"]):
+    for yy in range(data["colums"]):
+        for xx in range(data["rows"]):
             field = (xx,yy)
             if yy == 0 and xx!=0 :
                 plan.update({field:"up"})
@@ -28,7 +28,7 @@ def simple_hamilton(data):
                     plan.update({field:"right"})
                 #every second row goes left
             else: #uneven
-                if yy == 1 and xx != game.data["rows"]-1:
+                if yy == 1 and xx != data["rows"]-1:
                     plan.update({field:"down"})
                 else:
                     plan.update({field:"left"}) 

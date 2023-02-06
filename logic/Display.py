@@ -39,7 +39,7 @@ class Display:
             # Snake body
             # .draw.rect(play_surface, color, xy-coordinate)
             # xy-coordinate -> .Rect(x, y, size_x, size_y)
-            pygame.draw.rect(self.game_window, green, pygame.Rect(pos[0]*SCALE, pos[1]*SCALE, SCALE, SCALE))
+            pygame.draw.rect(self.game_window, green, pygame.Rect(pos[0]*SCALE, pos[1]*SCALE, SCALE-1, SCALE-1))
 
         # Snake food
         pygame.draw.rect(self.game_window, red, pygame.Rect(self.game.data["apple"][0]*SCALE, self.game.data["apple"][1]*SCALE, SCALE, SCALE))
