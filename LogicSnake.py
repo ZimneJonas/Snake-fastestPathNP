@@ -3,7 +3,7 @@ import logic.Ploting as plt
 import time
 
 #Show Game while solving
-VISUALS=False
+VISUALS=True
 SOLVER="simple_hamilton"
 
 if VISUALS:
