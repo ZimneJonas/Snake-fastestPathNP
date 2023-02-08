@@ -40,6 +40,6 @@ if __name__ == "__main__":
     game = SnakeGame()
     end = time.time()
     #game.data.update({"total_time":end-start})
-    print(game.data["times"]["planning_time"],"Moves", game.data["moves"],"Total time",end-start)
+    print(game.data["times"],"Moves", game.data["moves"],"Total time",end-start)
    
     

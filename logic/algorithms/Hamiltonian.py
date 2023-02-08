@@ -43,9 +43,6 @@ def simple_hamilton(data):
 
     return plan
 
-
-def jump():
-    pass
     
 
 def find_skip(path,game):
@@ -87,6 +84,8 @@ def find_skip(path,game):
 
 
 def short_cut(solver):
+
+    start=time.time()
     data = solver.game.data
     head_index = data["body"][-1]
     apple_index = data["apple_at_index"]
@@ -104,56 +103,10 @@ def short_cut(solver):
         return path
     
     find_skip(path,solver.game)
+    end=time.time()
+    data["times"]["shortcuts"] += end-start
     return path
-    
-    
 
-
-def broken_short_cut(solver):
-
-   
-    #1.Keep Body
-    #2.take shortcuts to apple
-    #3.fill rest
-    step = h_pos #keeps body
-    while 2<apple_dist:  
-        index = data["tour"][step]
-        field=data["order"][index]
-
-        if x<data["rows"]-1:
-            # check is rhe field after head we look around for shortcuts
-            index_right = data["order"].index((x+1,y))
-               
-            
-            #If shorter way is found
-            if jump > 1: # don't jump single steps
-                print("jump:",jump,"apple_at_index:",data["apple_at_index"],apple_dist,"index:",index)
-                
-                jump_point = step
-                while jump>0:
-                    
-                    del data["tour"][jump_point+1]
-                    jump -= 1
-                    apple_dist -= 1
-               
-                
-                
-
-                
-                
-                
-        step += 1
-        apple_dist -= 1
-    return []
-"""
-        if x>data["rows"]:
-            data["order"].index((x+1,y))
-        if 0>y:
-            data["order"].index((x,y-1))
-        if y>data["collums"]:
-            data["order"].index((x,y-1))
-        """
-   
 
 
 

@@ -25,7 +25,8 @@ class Solver:
         if "simple_hamilton" in self.data["name"]:  
             self.data.update({"plan" : hamil.simple_hamilton(self.data)})
             self.initial_plan_to_order()
-
+        if "shortcuting" in self.data["name"]:
+            self.data["times"].update({"shortcuts":0})
 
     def initial_plan_to_order(self):
         #creates order from 0 out of plan
