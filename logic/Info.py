@@ -1,6 +1,6 @@
 from collections import deque
 from random import randint
-import logic.algorithms.Solve as solve
+from logic.Solver import Solver
 from itertools import islice
 
 class Info: 
@@ -10,106 +10,94 @@ class Info:
         self.data.update({"rows" : rows })
         self.data.update({"colums" : colums })
         self.data.update({"grid" : [(xx,yy) for xx in range(self.data["rows"]) for yy in range(self.data["colums"])]})
+        self.data.update({"order": []})
+        self.data.update({"tour": deque()}) #tour to apple
+        self.data.update({"apple_at_step": [0]})
+        #self.data.update({"order_status": False})
+        #self.data.update({"body_length" : 1})
+        self.data.update({"body":deque([0])})
         
-        self.data.update({"order": deque()})
-        self.data.update({"order_status": False})
-        #Head of Snake starts in middle of grid
-        self.data.update({"body_length" : 1})
-        self.data.update({"planning_time":[]})
         self.data.update({"moves" : 0})
         self.data.update({"times": dict()})
-        self.update_plan()
+        self.data["times"].update({"planning_time":[]})
+        self.solver = Solver(self)
 
     def move(self):
         self.data["moves"] += 1
+        self.data["body"].append(self.data["tour"].popleft())
+        #print(self.data["apple_at_step"][-1],self.data["moves"],self.get_apple_distance())
         
-        if self.get_head()==self.data["apple"]: 
-            #print("Progress:",self.data["body_length"],"/",len(self.data["grid"]))
-            self.eat()
+        if self.data["body"][-1]==self.data["apple_at_index"] : 
+            print("Progress:",len(self.data["body"]),"/",len(self.data["grid"]))
             if not self.generate_apple():
                 print("game WON")
                 return False #STOPS MOVING
         else:
-            self.data["order"].rotate(-1)
-
+            self.data["body"].popleft()
+            
         return True
-    
-
-    def update_plan(self):
-        # updates plan if needed
-        if self.data["name"]=="simple_hamilton":
-            #keeps old plan after first time
-            if "plan" not in self.data:  
-                self.data.update({"plan" : solve.simple_hamilton(self.data)})
-                self.initial_plan_to_order()
 
 
-    def get_head(self):
-        return self.data["order"][self.data["body_length"]-1]
+
+    def get_next_in_order(self,index):
+        if index+1<len(self.data["order"]):
+            return index+1
+        else:
+            return 0
 
 
-    def eat(self):
-        self.data["body_length"] += 1
 
     def generate_apple(self):
         #randomly genarates apple
         #outside of body
         
-        free = self.get_free_fields()
-        if len(free) == 0:
+        free_fields = self.get_free_fields()
+        if len(free_fields)== 1:
             return False
         
-        self.data.update({"apple":free[randint(0,len(free)-1)]})  
-        self.update_plan()
+        new_apple_index = free_fields[randint(0,len(free_fields)-1)]
+        
+        self.data.update({"apple":self.data["order"][new_apple_index]})   
+        self.data.update({"apple_at_index":new_apple_index}) 
+        self.solver.apple_update()
         return True
-   
+    
+    def get_order_distance(self, index1,index2):
+        #get distance from 1 to 2 in order
+        if index2<=index1:
+            return index1-index2
+        else:
+            return len(self.data["order"])-1-index2+index1
 
-    def initial_plan_to_order(self):
-        #creates order from 0 out of plan
-        self.data["order"].append(tuple(((self.data["rows"]//2)-1, (self.data["colums"]//2)-1)))
-        start = self.data["order"][0] #start
-        step = self.get_next_field(start)
-        while start!=step:
-            self.data["order"].append(step)
-            step = self.get_next_field(step)
-        
-        if len(self.data["order"]) != len(self.data["order"]):
-            raise ValueError("CUSTOM ERROR: no complete order generated")
-
-            
-
-    def update_plan_to_order(self):
-
-        #Snake is 0-body_length-1 (right order) - nochange
-        self.data["body_length"]
-        #get new path
-        
-        for ii in range(len(self.data["grid"])):
-            self.data["order"].rotate(-1) # one full round
-            #in Body do nothing! (rotate through)
-            if ii >= self.data["body_length"]-1:
-                self.data["order"][0] = self.get_next_field(self.data["order"][-1])
-                
-        if len(self.data["order"]) != len(self.data["order"]):
-            raise ValueError("CUSTOM ERROR: no complete order generated")            
+    def num_empty_fields(self):
+        return len(self.data["order"])-len(self.data["body"])
+    
+    #def get_apple_distance_from_head(self):
+    #    ''' gets distance from head to apple
+    #    '''
+    #    return self.data["apple_at_step"][-1]-self.data["moves"]
+      
     
     def get_body(self):
-        return list(islice(self.data["order"] ,0, self.data["body_length"]))
+        return {self.data["order"][ii] for ii in self.data["body"]}
+    
     
     def get_free_fields(self):
-        return list(islice(self.data["order"] ,self.data["body_length"], len(self.data["grid"])))
+        body_set = set(self.data["body"])
+        free_fields=[index for index in range(0,len(self.data["grid"])) if index not in body_set]
+        return free_fields
 
 
-    def get_next_field(self, field):
-        driection = self.data["plan"][field]
-        if driection=="up":
-            field =(field[0]-1,field[1]) 
-        elif driection=="down":
-            field =(field[0]+1,field[1]) 
-        elif driection=="left":
-            field =(field[0],field[1]-1)
-        elif driection=="right":
-            field =(field[0],field[1]+1)
-        else:
-            raise Exception('Wrong direction')
-        return field
+    def get_vertices(self):
+        """ generates vertices 
+            needed?
+            ignores body for now #TODO maybe add
+        """
+        vertices = []
+        for field in self.data["grid"]:
+            if field[0]>0:
+                vertices.append((field,(field[0]-1,field[1])))
+            if field[1]>0:
+                vertices.append((field,(field[0],field[1]-1)))
+        return vertices
+

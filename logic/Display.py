@@ -5,7 +5,7 @@ red = pygame.Color(255, 0, 0)
 green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 fps_controller = pygame.time.Clock()
-SCALE = 50
+scale = 20
 
 # FPS (frames per second) controller
 
@@ -18,12 +18,12 @@ class Display:
         # pygame.init() example output -> (6, 0)
         # second number in tuple gives number of errors
         if self.check_errors[1] > 0:
-            print(f'[!] Had {check_errors[1]} errors when initialising game, exiting...')
+            print(f'[!] Had {self.check_errors[1]} errors when initialising game, exiting...')
             sys.exit(-1)
         else:
             print('[+] Game successfully initialised')
 
-        self.game_window = pygame.display.set_mode((game.data["rows"]*SCALE, game.data["colums"]*SCALE))
+        self.game_window = pygame.display.set_mode((game.data["rows"]*scale, game.data["colums"]*scale))
         pygame.display.set_caption('Snake CRUSHER')
 
     def get_frame(self, fps=240):
@@ -39,10 +39,10 @@ class Display:
             # Snake body
             # .draw.rect(play_surface, color, xy-coordinate)
             # xy-coordinate -> .Rect(x, y, size_x, size_y)
-            pygame.draw.rect(self.game_window, green, pygame.Rect(pos[0]*SCALE, pos[1]*SCALE, SCALE-1, SCALE-1))
+            pygame.draw.rect(self.game_window, green, pygame.Rect(pos[0]*scale, pos[1]*scale, scale-1, scale-1))
 
         # Snake food
-        pygame.draw.rect(self.game_window, red, pygame.Rect(self.game.data["apple"][0]*SCALE, self.game.data["apple"][1]*SCALE, SCALE, SCALE))
+        pygame.draw.rect(self.game_window, red, pygame.Rect(self.game.data["apple"][0]*scale, self.game.data["apple"][1]*scale, scale, scale))
 
         # Refresh game screen
         pygame.display.update()

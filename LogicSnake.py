@@ -3,12 +3,13 @@ import logic.Ploting as plt
 import time
 
 #Show Game while solving
-VISUALS=True
-SOLVER="simple_hamilton"
+VISUALS = False
+#SOLVER = "simple_hamilton"
+SOLVER = "shortcuting_simple_hamilton"
 
 if VISUALS:
     from logic.Display import Display
-    FPS = 60
+    FPS = 30
 
 
 class SnakeGame(Info):
@@ -18,7 +19,7 @@ class SnakeGame(Info):
            
         if VISUALS:
             #Make smaler for faster results
-            super().__init__(SOLVER,20,10)
+            super().__init__(SOLVER, 20, 10)
             ui = Display(self)
         else:
             super().__init__(SOLVER, 72, 48)
@@ -39,6 +40,6 @@ if __name__ == "__main__":
     game = SnakeGame()
     end = time.time()
     #game.data.update({"total_time":end-start})
-    print(game.data["planning_time"],"Moves", game.data["moves"],"Total time",end-start)
+    print(game.data["times"]["planning_time"],"Moves", game.data["moves"],"Total time",end-start)
    
     
