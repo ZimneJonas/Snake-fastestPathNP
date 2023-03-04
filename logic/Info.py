@@ -4,8 +4,10 @@ from logic.Solver import Solver
 from itertools import islice
 
 class Info: 
-    data = dict()
-    def __init__(self, name = "simple_hamilton",rows = 72, colums = 48 ): #72/48
+    
+    def __init__(self, name = "simple_hamilton",rows = 72, colums = 48 , skipPercent=0): #72/48
+        self.data = dict()
+        
         self.data.update({"name" : name })
         self.data.update({"rows" : rows })
         self.data.update({"colums" : colums })
@@ -20,6 +22,8 @@ class Info:
         self.data.update({"moves" : 0})
         self.data.update({"times": dict()})
         self.data["times"].update({"planning_time":[]})
+        #Until what percent snake length do wie shortcut
+        self.data.update({"skipPercent":skipPercent})
         self.solver = Solver(self)
 
     def move(self):
@@ -28,7 +32,7 @@ class Info:
         #print(self.data["apple_at_step"][-1],self.data["moves"],self.get_apple_distance())
         
         if self.data["body"][-1]==self.data["apple_at_index"] : 
-            print("Progress:",len(self.data["body"]),"/",len(self.data["grid"]))
+            #print("Progress:",len(self.data["body"]),"/",len(self.data["grid"]))
             if not self.generate_apple():
                 print("game WON")
                 return False #STOPS MOVING
@@ -56,7 +60,6 @@ class Info:
             return False
         
         new_apple_index = free_fields[randint(0,len(free_fields)-1)]
-        
         self.data.update({"apple":self.data["order"][new_apple_index]})   
         self.data.update({"apple_at_index":new_apple_index}) 
         self.solver.apple_update()

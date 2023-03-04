@@ -8,7 +8,6 @@ class Solver:
         self.data = game.data
         self.game = game
         self.initial_update()
-        
 
 
             
@@ -25,14 +24,18 @@ class Solver:
         if "simple_hamilton" in self.data["name"]:  
             self.data.update({"plan" : hamil.simple_hamilton(self.data)})
             self.initial_plan_to_order()
+        if "random_hamilton" in  self.data["name"]:          
+            self.data.update({"order" : hamil.random_hamilton(self)})
         if "shortcuting" in self.data["name"]:
-            self.data["times"].update({"shortcuts":0})
+            self.data["times"].update({"shortcuts":0})#inital shortcut time
 
     def initial_plan_to_order(self):
         #creates order from 0 out of plan
         self.data["order"].append(tuple(((self.data["rows"]//2)-1, (self.data["colums"]//2)-1)))
         start = self.data["order"][0] #start
+        
         step = self.get_next_field(start)
+        
         while start!=step:
             self.data["order"].append(step)
             step = self.get_next_field(step)
@@ -55,6 +58,7 @@ class Solver:
             raise ValueError("CUSTOM ERROR: no complete order generated")
 
     def get_next_field(self, field):
+        #print(field,self.data["plan"][field])
         driection = self.data["plan"][field]
         if driection=="up":
             field =(field[0]-1,field[1]) 

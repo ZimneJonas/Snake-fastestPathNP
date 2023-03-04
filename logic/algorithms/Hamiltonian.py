@@ -1,9 +1,11 @@
 import time
 from itertools import islice
+import random
 
 def simple_hamilton(data):
+    
     start = time.time()
-    if data["colums"]%2:
+    if data["rows"]%2:
         raise ValueError('uneven colums not yet accepted')
     if data["rows"]<1 or data["colums"]<1:
         raise ValueError('too smal')
@@ -43,7 +45,86 @@ def simple_hamilton(data):
 
     return plan
 
+
+class Stack:
+        
+    def __init__(self,data):
+        self.data = data
+        self.cycle = []
+        self.visited = set()
+        self.checked = []
+        self.foundFlag = False
+        self.hamCycle = []
+
+
+    def safe_result(self):
+        if not self.foundFlag:
+            self.foundFlag = True
+            self.hamCycle = self.cycle.copy()
+    # 
+    def build_stack(self, current_cell):
+        if self.foundFlag:
+            return False
+        self.cycle.append(current_cell)    
+        self.visited.add(current_cell)
+        neighbors = get_neighbors(current_cell, self.data)
+        if len(self.cycle) == len(self.data["grid"]):
+            # Found a cycle!
+            if not self.foundFlag and self.cycle[0] in neighbors:            
+                self.safe_result()
+                self.foundFlag = True
+                return True
+            else:
+                return False
+            
+
+        unvisited_neighbors = [cell for cell in neighbors if cell not in self.visited]    
+        # shuffle unvisited neighbor to explore a random path
+        random.shuffle(unvisited_neighbors)
+
+        for cell in unvisited_neighbors:
+            if self.foundFlag:
+                return False
+            if not self.build_stack(cell):
+                self.visited.remove(cell)
+                self.cycle.pop()
+        #print(self.cycle, self.hamCycle , len(self.cycle), "/", len(self.data["grid"]))
+        return False
+        
+
+        
+    def get_hamCycle(self):
+        self.build_stack((1,0))
+        
+        return self.hamCycle
+
+
+def random_hamilton(solver):
+    start = time.time()
+    myStack = Stack(solver.data)
+    order = myStack.get_hamCycle()
+    end = time.time()
+    solver.data["times"]["planning_time"].append(("random_hamilton",end-start))
+    return order
     
+
+
+def get_neighbors(cell, data):
+    """Get a list of neighboring cells in an n x n grid."""
+    row, col = cell
+    data["rows"]
+    neighbors = []
+    if row > 0:
+        neighbors.append((row-1, col))
+    if row < data["rows"]-1:
+        neighbors.append((row+1, col))
+    if col > 0:
+        neighbors.append((row, col-1))
+    if col < data["colums"]-1:
+        neighbors.append((row, col+1))
+    return neighbors
+
+
 
 def find_skip(path,game):
     order=game.data["order"]
@@ -98,7 +179,7 @@ def short_cut(solver):
         path.extend(range(apple_index+1))
     
     
-    if len(data["body"])*2 > len(data["grid"]):
+    if len(data["body"]) > len(data["grid"])*data["skipPercent"]/100:
         #Only search for shortcuts if some space is left
         return path
     

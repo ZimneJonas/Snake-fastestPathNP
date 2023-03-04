@@ -1,11 +1,13 @@
 from logic.Info import Info 
-import logic.Ploting as plt
 import time
 
 #Show Game while solving
-VISUALS = False
+VISUALS = True
+
 #SOLVER = "simple_hamilton"
-SOLVER = "shortcuting_simple_hamilton"
+#SOLVER = "shortcuting_simple_hamilton"
+#SOLVER = "random_hamilton"
+SOLVER = "shortcuting_random_hamilton"
 
 if VISUALS:
     from logic.Display import Display
@@ -15,14 +17,11 @@ if VISUALS:
 class SnakeGame(Info):
 
    
-    def __init__(self): 
-           
+    def __init__(self, rows=6, colums=8, skipPercent = 100): 
+        start = time.time()
+        super().__init__(SOLVER, rows, colums,skipPercent)  
         if VISUALS:
-            #Make smaler for faster results
-            super().__init__(SOLVER, 20, 10)
             ui = Display(self)
-        else:
-            super().__init__(SOLVER, 72, 48)
                 
         self.generate_apple()
         while self.move():
@@ -33,7 +32,8 @@ class SnakeGame(Info):
         if not VISUALS:
             #save data
             pass
-            
+        end = time.time()
+        self.data["times"].update({"total":end-start})
                 
 if __name__ == "__main__":
     start = time.time()

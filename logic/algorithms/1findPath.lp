@@ -1,6 +1,6 @@
 %want 60 * 40 fast
-#const length=60. 
-#const hight=4.
+#const length=4. 
+#const hight=6.
 %grid((1..length,1..hight)). %snake grid
 %time(0..hight*length).
 
@@ -31,8 +31,10 @@ direction((X,Y)) :- X=-1..1, Y=-1..1, |X+Y|=1.
 food(T):-apple((X,Y)),head((X,Y),T).
 :-not 1{food(T)}1. %Suprisingly fast
 
-#maximize {1@2,T:head((X,Y),T);-1@1,T:food(T)}.
+#minimize{T:food(T)}.
+
 
 
 #show.
 #show ((X,Y),T) : head((X,Y),T).
+#show food(T):food(T).

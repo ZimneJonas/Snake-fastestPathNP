@@ -40,7 +40,12 @@ class Display:
             # .draw.rect(play_surface, color, xy-coordinate)
             # xy-coordinate -> .Rect(x, y, size_x, size_y)
             pygame.draw.rect(self.game_window, green, pygame.Rect(pos[0]*scale, pos[1]*scale, scale-1, scale-1))
-
+        #draw order
+        if self.game.data["order"]:
+            order = self.game.data["order"]
+            for ii in range(len(order)-1):
+                pygame.draw.line(self.game_window, blue,  (order[ii][0]*scale+scale/2,order[ii][1]*scale+scale/2) , (order[ii+1][0]*scale+scale/2,order[ii+1][1]*scale+scale/2))
+            pygame.draw.line(self.game_window, blue,  (order[-1][0]*scale+scale/2,order[ii][-1]*scale+scale/2) , (order[0][0]*scale+scale/2,order[0][1]*scale+scale/2))
         # Snake food
         pygame.draw.rect(self.game_window, red, pygame.Rect(self.game.data["apple"][0]*scale, self.game.data["apple"][1]*scale, scale, scale))
 
